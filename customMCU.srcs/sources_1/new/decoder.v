@@ -99,7 +99,7 @@ module decoder(
                 tempOut <= 14'b0_0_x_x_1_0_0_100_00_1_1;
             end
             //No Address format
-            4'b0001:
+            4'b0111:
             begin
                 //TODO: As above, probably better way to init
                 noAdOpCode[3] <= inst[11];
@@ -173,7 +173,15 @@ module decoder(
                     begin
                         tempOut <= 14'b0_0_x_x_0_0_0_xxx_00_0_0;
                     end
+                    default:
+                    begin
+                        tempOut <= 14'b0_0_0_0_0_0_0_000_00_0_0;
+                    end
                 endcase
+            end
+            default:
+            begin
+                tempOut <= 14'b0_0_0_0_0_0_0_000_00_0_0;
             end
         endcase
     end
