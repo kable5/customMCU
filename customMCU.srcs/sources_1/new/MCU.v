@@ -15,6 +15,8 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
+//          .5 - Created up to IF stage
+//          .5.1 - Altered to accomodate new diagram
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +28,8 @@ module MCU(
     );
     
     reg [11:0] stack;
+    reg Z;
+    reg C;
     
     //IF reg/wires
     reg [7:0] IF_PC;
@@ -59,7 +63,7 @@ module MCU(
                         .iff(iff), .rw(rw), .ra(ra), .md(md), .ms(ms), .mw(mw), .bs(bs), .fs(fs), .ma(ma), .me(me), .mf(mf));               
     regFile regFile_unit(.clk(clk), .reset(reset), .wr_en(Decode_WB[4]), .reg_addr(ra), .in_data(muxd),
                         .A_data(out_a), .B_data(out_b));
-    mux2x1 muxE(.a(out_b), .b(stack), .sel(me),
+    mux4x2 muxE(.a(out_b), .b(stack), .c(Z), .d(C), .sel(me),
                 .out(me_out));
     mux2x1 muxA(.a(DOF_PC), .b(out_a), .sel(ma),
                 .out(me_out));
