@@ -32,10 +32,10 @@ module decoder(
     output md,
     output ms,
     output mw,
-    output [1:0] mb,
+    output mb,
     output [2:0] fs,
     output ma,
-    output me,
+    output [1:0] me,
     output mf
     );
     
@@ -55,47 +55,47 @@ module decoder(
             //LDA
             4'b0000:
             begin
-                tempOut <= 14'b0_1_0_1_0_0_00_000_0_0_0;
+                tempOut <= 14'b0_1_0_1_0_0_0_000_0_00_0;
             end
             //LDB
             4'b0001:
             begin
-                tempOut <= 14'b0_1_1_1_0_0_00_000_0_0_0;
+                tempOut <= 14'b0_1_1_1_0_0_0_000_0_00_0;
             end
             //STA
             4'b0010:
             begin
-                tempOut <= 14'b0_0_x_x_0_1_00_xxx_0_0_0;
+                tempOut <= 14'b0_0_x_x_0_1_0_xxx_0_00_0;
             end
             //STB
             4'b0011:
             begin
-                tempOut <= 14'b0_0_x_x_0_1_00_xxx_0_0_0;
+                tempOut <= 14'b0_0_x_x_0_1_0_xxx_0_00_0;
             end
             //JMP
             4'b0100:
             begin
-                tempOut <= 14'b0_0_x_x_0_0_01_xxx_0_0_0;
+                tempOut <= 14'b0_0_x_x_0_0_1_xxx_0_00_0;
             end
             //JSR
             4'b1000:
             begin
-                tempOut <= 14'b0_0_x_x_1_0_01_xxx_0_0_0;
+                tempOut <= 14'b0_0_x_x_1_0_1_xxx_0_00_0;
             end
             //PUSHA
             4'b1010:
             begin
-                tempOut <= 14'b0_0_x_x_1_1_00_101_0_1_1;
+                tempOut <= 14'b0_0_x_x_1_1_0_101_0_01_1;
             end
             //POPA
             4'b1100:
             begin
-                tempOut <= 14'b0_1_0_1_1_0_00_100_0_1_1;
+                tempOut <= 14'b0_1_0_1_1_0_0_100_0_01_1;
             end
             //RET
             4'b1110:
             begin
-                tempOut <= 14'b0_0_x_x_1_0_00_100_0_1_1;
+                tempOut <= 14'b0_0_x_x_1_0_0_100_0_01_1;
             end
             //No Address format
             4'b0111:
@@ -110,71 +110,71 @@ module decoder(
                     //ADD
                     4'b0001:
                     begin
-                        tempOut <= 14'b0_1_0_0_0_0_00_001_00_0_0;
+                        tempOut <= 14'b0_1_0_0_0_0_00_001_0_00_0;
                     end
                     //AND
                     4'b0010:
                     begin
-                        tempOut <= 14'b0_1_0_0_0_0_00_010_00_0_0;
+                        tempOut <= 14'b0_1_0_0_0_0_00_010_0_00_0;
                     end
                     //CLA
                     4'b0011:
                     begin
-                        tempOut <= 14'b0_1_0_0_0_0_00_011_00_0_0;
+                        tempOut <= 14'b0_1_0_0_0_0_00_011_0_00_0;
                     end
                     //CLB
                     4'b0100:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_00_011_00_0_0;
+                        tempOut <= 14'b0_1_1_0_0_0_00_011_0_00_0;
                     end
                     //CMB
                     4'b0101:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_00_110_00_0_0;
+                        tempOut <= 14'b0_1_1_0_0_0_00_110_0_00_0;
                     end
                     //INCB
                     4'b0110:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_00_100_00_0_0;
+                        tempOut <= 14'b0_1_1_0_0_0_00_100_0_00_0;
                     end
                     //DECB
                     4'b0111:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_00_101_00_0_0;
+                        tempOut <= 14'b0_1_1_0_0_0_00_101_0_00_0;
                     end
                     //CLC
                     4'b1000:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_00_011_10_0_0;
+                        tempOut <= 14'b0_0_x_x_0_0_00_011_0_00_0;
                     end
                     //CLZ
                     4'b1001:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_00_011_11_0_0;
+                        tempOut <= 14'b0_0_x_x_0_0_00_011_1_00_0;
                     end
                     //ION
                     4'b1010:
                     begin
-                        tempOut <= 14'b1_0_x_x_0_0_00_xxx_00_0_0;
+                        tempOut <= 14'b1_0_x_x_0_0_00_xxx_00_00_0;
                     end
                     //IOF
                     4'b1011:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_00_xxx_00_0_0;
+                        tempOut <= 14'b0_0_x_x_0_0_00_xxx_00_00_0;
                     end
                     //SC
                     4'b1100:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_00_111_11_0_0;
+                        tempOut <= 14'b0_0_x_x_0_0_00_111_11_01_0;
                     end
                     //SZ
                     4'b1101:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_00_111_10_0_0;
+                        tempOut <= 14'b0_0_x_x_0_0_00_111_10_10_0;
                     end
                     default:
                     begin
-                        tempOut <= 14'b0_0_0_0_0_0_00_000_0_0_0;
+                        tempOut <= 14'b0_0_0_0_0_0_00_000_0_00_0;
                     end
                 endcase
             end
@@ -186,10 +186,10 @@ module decoder(
                 tempOut[10] <= opCode[9];
                 tempOut[9] <= opCode[8];
                 tempOut[8] <= opCode[7];
-                tempOut[7:6] <= opCode[6:5];
-                tempOut[5:3] <= opCode[4:2];
-                tempOut[2] <= opCode[1];
-                tempOut[1] <= opCode[0];
+                tempOut[7:6] <= opCode[6];
+                tempOut[5:3] <= opCode[5:3];
+                tempOut[2] <= opCode[2];
+                tempOut[1] <= opCode[1:0];
                 tempOut[0] <= opCode[9];
             end
             default:
@@ -205,10 +205,10 @@ module decoder(
     assign md = tempOut[10];
     assign ms = tempOut[9];
     assign mw = tempOut[8];
-    assign bs = tempOut[7:6];
-    assign fs = tempOut[5:3];
-    assign ma = tempOut[2];
-    assign me = tempOut[1];
+    assign mb = tempOut[7];
+    assign fs = tempOut[6:4];
+    assign ma = tempOut[3];
+    assign me = tempOut[2:1];
     assign mf = tempOut[0];
     
 endmodule

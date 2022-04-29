@@ -21,12 +21,12 @@
 
 
 module mux4x2(
-    input [7:0] a,
-    input [7:0] b,
-    input [7:0] c,
-    input [7:0] d,
+    input [15:0] a,
+    input [15:0] b,
+    input [15:0] c,
+    input [15:0] d,
     input [1:0] sel,
-    output [7:0] out
+    output [15:0] out
     );
     reg [7:0] tempOut;
     always @ (*)
