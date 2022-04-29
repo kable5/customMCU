@@ -32,7 +32,7 @@ module decoder(
     output md,
     output ms,
     output mw,
-    output mb[1:0],
+    output [1:0] mb,
     output [2:0] fs,
     output ma,
     output me,
