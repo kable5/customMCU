@@ -18,7 +18,7 @@
 //          .5 - Created up to IF stage
 //          .5.1 - Altered to accomodate new diagram
 // Additional Comments:
-// 
+// Somehow replaced BS with Mb, fix
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -37,13 +37,14 @@ module MCU(
     wire [15:0] inst;
     
     //DOF reg/wires
-    reg [7:0] DOF_PC;
+    reg [15:0] DOF_PC;
     reg [15:0] DOF_IR;
     
     wire iff, rw, ra, md, ms, mw, ma, mb, mf;
     wire [2:0] fs;
     wire [1:0] me;
-    wire [15:0] out_rega, out_regb, me_out, ma_out, mf_out;
+    wire [15:0] out_rega, out_regb, me_out, ma_out;
+    wire [11:0] mf_out;
     
     //EX reg/wires
     reg [7:0] EX_PC;
@@ -53,6 +54,7 @@ module MCU(
     
     wire [15:0] outm_b;
     wire [15:0] F, m_bus;
+    wire DHS;
     
     //WB reg/wires
     reg [3:0] Decode_WB;
@@ -80,10 +82,12 @@ module MCU(
     alu ALU_unit(.FS(Decode_EX[2:0]), .A(Bus_a), .B(Bus_b), 
                 .F(F));
     mux2x1 muxB (.a(Bus_a), .b(Bus_b), .sel(Decode_EX[7]),
-                    .out(m_bus));
-    dataMem Data_Mem_Unit(.clk(clk), .wr_en(Decode_EX[4]), .addr(Bus_addr), .data_in(outm_b),
+                    .out(outm_b));
+    dataMem Data_Mem_Unit(.clk(clk), .wr_en(Decode_EX[4]),.reset(reset), .addr(Bus_addr), .data_in(outm_b),
                             .data_out(m_bus));
                             
+     dataHazardStall Data_Stall_Unit(.RW(Decode_EX[8]), .DA(Decode_EX[7]), .DAP(ra),.MA(ma), .MB(me), .MF(mf),
+                                        .DHS(DHS));
      //WB Modules
      mux2x1 muxD (.a(Bus_F), .b(Bus_mem), .sel(Decode_WB[1]),
                     .out(outm_d));
@@ -102,34 +106,35 @@ module MCU(
     
     always @ (posedge clk)
     begin
-        IF_PC <= IF_PC+1;
+        if(DHS)IF_PC <= IF_PC+1;
         
-        DOF_PC <= IF_PC;
-        DOF_IR <= inst;
+        if(DHS)DOF_PC <= IF_PC;
+        if(DHS) DOF_IR <= inst;
         
         //EX Stage
-        EX_PC <= DOF_PC;
+        if(DHS) EX_PC <= DOF_PC;
         
         Decode_EX[9] <= iff;
-        Decode_EX[8] <= rw;
-        Decode_EX[7] <= ra;
+        Decode_EX[8] <= rw & DHS;
+        Decode_EX[7] <= ra & DHS;
         Decode_EX[6] <= md;
         Decode_EX[5] <= ms;
-        Decode_EX[4] <= mw;
+        Decode_EX[4] <= mw & DHS;
         Decode_EX[3] <= mb;
         Decode_EX[2:0] <= fs;
         
         Bus_b <= me_out;
         Bus_a <= ma_out;
+        Bus_addr <= mf_out;
         
         //WB Stage
         Bus_F <= F;
         Bus_mem <= m_bus;
         
-        Decode_WB[3] <= Decode_EX[9];
-        Decode_WB[2] <= Decode_EX[8];
-        Decode_WB[1] <= Decode_EX[7];
-        Decode_WB[0] <= Decode_EX[6];
+        Decode_WB[3] <= Decode_EX[8];
+        Decode_WB[2] <= Decode_EX[7];
+        Decode_WB[1] <= Decode_EX[6];
+        Decode_WB[0] <= Decode_EX[5];
         
     end
 endmodule

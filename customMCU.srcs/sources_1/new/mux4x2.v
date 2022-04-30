@@ -26,20 +26,18 @@ module mux4x2(
     input [15:0] c,
     input [15:0] d,
     input [1:0] sel,
-    output [15:0] out
+    output reg [15:0] out
     );
-    reg [7:0] tempOut;
     always @ (*)
     begin 
         if(sel == 0)
-            tempOut = a;
+            out = a;
         else if(sel == 1)
-            tempOut = b;
+            out = b;
         else if(sel == 2)
-            tempOut = c;
+            out = c;
         else if(sel == 3)
-            tempOut = d;  
-        else tempOut = a;  
+            out = d;  
+        else out = a;  
     end
-    assign out = tempOut;
 endmodule

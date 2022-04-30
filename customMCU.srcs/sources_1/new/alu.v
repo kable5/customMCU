@@ -26,16 +26,15 @@ module alu(FS, A, B, F);
     input[15:0] A;
     input[15:0] B;
     output reg[15:0] F;
-    always @(FS)
+    always @(*)
     begin
-        //needs default case
         case(FS)
             3'b001: F = A + B;
             3'b010: F = A & B;
             3'b011: F = 0;
-            3'b100: F = B + 16'd1;
-            3'b101: F = B - 16'd1;
-            3'b110: F = ~A;
+            3'b100: F = B + 16'b1;
+            3'b101: F = B - 16'b1;
+            3'b110: F = ~B;
             3'b111: if(B==0) F = A+1;
             default: F = 0;
        endcase
