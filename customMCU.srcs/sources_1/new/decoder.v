@@ -21,7 +21,6 @@
 // - Double check to make sure that undefined (x) is synthesizable, otherwise set to 0
 // - reduce custom insts down to 8 bits
 // 
-// Somehow replaced BS with Mb, fix
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -33,7 +32,7 @@ module decoder(
     output md,
     output ms,
     output mw,
-    output mb,
+    output [1:0] bs,
     output [2:0] fs,
     output ma,
     output [1:0] me,
@@ -42,7 +41,7 @@ module decoder(
     
     reg [3:0] opCode;
     reg [3:0] noAdOpCode;
-    reg [13:0] tempOut;
+    reg [14:0] tempOut;
     
     always @(*)
     begin
@@ -56,47 +55,47 @@ module decoder(
             //LDA
             4'b0000:
             begin
-                tempOut <= 14'b0_1_0_1_0_0_0_000_0_00_1;
+                tempOut <= 15'b0_1_0_1_0_0_00_000_0_00_1;
             end
             //LDB
             4'b0001:
             begin
-                tempOut <= 14'b0_1_1_1_0_0_0_000_0_00_1;
+                tempOut <= 15'b0_1_1_1_0_0_00_000_0_00_1;
             end
             //STA
             4'b0010:
             begin
-                tempOut <= 14'b0_0_x_x_0_1_0_xxx_0_00_1;
+                tempOut <= 15'b0_0_x_x_0_1_00_000_0_00_1;
             end
             //STB
             4'b0011:
             begin
-                tempOut <= 14'b0_0_x_x_0_1_0_xxx_0_00_1;
+                tempOut <= 15'b0_0_x_x_0_1_00_000_0_00_1;
             end
             //JMP
             4'b0100:
             begin
-                tempOut <= 14'b0_0_x_x_0_0_1_xxx_0_00_0;
+                tempOut <= 15'b0_0_x_x_0_0_10_000_0_01_0;
             end
             //JSR
             4'b1000:
             begin
-                tempOut <= 14'b0_0_x_x_1_0_1_xxx_0_00_0;
+                tempOut <= 15'b0_0_x_x_1_0_10_000_0_01_0;
             end
             //PUSHA
             4'b1010:
             begin
-                tempOut <= 14'b0_0_x_x_1_1_0_101_0_01_1;
+                tempOut <= 15'b0_0_x_x_1_1_00_101_0_11_1;
             end
             //POPA
             4'b1100:
             begin
-                tempOut <= 14'b0_1_0_1_1_0_0_100_0_01_1;
+                tempOut <= 15'b0_1_0_1_1_0_00_100_0_11_1;
             end
             //RET
             4'b1110:
             begin
-                tempOut <= 14'b0_0_x_x_1_0_0_100_0_01_1;
+                tempOut <= 15'b0_0_x_x_1_0_00_100_0_11_1;
             end
             //No Address format
             4'b0111:
@@ -111,75 +110,76 @@ module decoder(
                     //ADD
                     4'b0001:
                     begin
-                        tempOut <= 14'b0_1_0_0_0_0_0_001_1_00_1;
+                        tempOut <= 15'b0_1_0_0_0_0_00_001_1_00_1;
                     end
                     //AND
                     4'b0010:
                     begin
-                        tempOut <= 14'b0_1_0_0_0_0_0_010_1_00_1;
+                        tempOut <= 15'b0_1_0_0_0_0_00_010_1_00_1;
                     end
                     //CLA
                     4'b0011:
                     begin
-                        tempOut <= 14'b0_1_0_0_0_0_0_011_1_00_0;
+                        tempOut <= 15'b0_1_0_0_0_0_00_011_1_00_0;
                     end
                     //CLB
                     4'b0100:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_0_011_0_00_0;
+                        tempOut <= 15'b0_1_1_0_0_0_00_011_0_00_0;
                     end
                     //CMB
                     4'b0101:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_0_110_0_00_0;
+                        tempOut <= 15'b0_1_1_0_0_0_00_110_0_00_0;
                     end
                     //INCB
                     4'b0110:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_0_100_0_00_0;
+                        tempOut <= 15'b0_1_1_0_0_0_00_100_0_00_0;
                     end
                     //DECB
                     4'b0111:
                     begin
-                        tempOut <= 14'b0_1_1_0_0_0_0_101_0_00_0;
+                        tempOut <= 15'b0_1_1_0_0_0_00_101_0_00_0;
                     end
                     //CLC
                     4'b1000:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_0_011_0_00_0;
+                        tempOut <= 15'b0_0_x_x_0_0_00_011_0_00_0;
                     end
                     //CLZ
                     4'b1001:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_0_011_1_00_0;
+                        tempOut <= 15'b0_0_x_x_0_0_00_011_1_00_0;
                     end
                     //ION
                     4'b1010:
                     begin
-                        tempOut <= 14'b1_0_x_x_0_0_0_xxx_0_00_0;
+                        tempOut <= 15'b1_0_x_x_0_0_00_000_0_00_0;
                     end
                     //IOF
                     4'b1011:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_0_xxx_0_00_0;
+                        tempOut <= 15'b0_0_x_x_0_0_00_000_0_00_0;
                     end
                     //SC
                     4'b1100:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_0_111_0_01_0;
+                        tempOut <= 15'b0_0_x_x_0_0_11_111_0_11_0;
                     end
                     //SZ
                     4'b1101:
                     begin
-                        tempOut <= 14'b0_0_x_x_0_0_0_111_0_10_0;
+                        tempOut <= 15'b0_0_0_0_0_0_11_111_0_10_0;
                     end
                     default:
                     begin
-                        tempOut <= 14'b0_0_0_0_0_0_0_000_0_00_0;
+                        tempOut <= 15'b0_0_0_0_0_0_00_000_0_00_0;
                     end
                 endcase
             end
             //custom case
+            /*
             4'b1111:
             begin
                 tempOut[12] <= opCode[11];
@@ -193,20 +193,22 @@ module decoder(
                 tempOut[1] <= opCode[1:0];
                 tempOut[0] <= opCode[9];
             end
+            */
             default:
             begin
                 tempOut <= 14'b0_0_0_0_0_0_0_000_00_0_0;
             end
+            
         endcase
     end
     
-    assign iff = tempOut[13];
-    assign rw = tempOut[12];
-    assign ra = tempOut[11];
-    assign md = tempOut[10];
-    assign ms = tempOut[9];
-    assign mw = tempOut[8];
-    assign mb = tempOut[7];
+    assign iff = tempOut[14];
+    assign rw = tempOut[13];
+    assign ra = tempOut[12];
+    assign md = tempOut[11];
+    assign ms = tempOut[10];
+    assign mw = tempOut[9];
+    assign bs = tempOut[8:7];
     assign fs = tempOut[6:4];
     assign ma = tempOut[3];
     assign me = tempOut[2:1];
