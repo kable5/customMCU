@@ -90,7 +90,7 @@ module decoder(
             //POPA
             4'b1100:
             begin
-                tempOut <= 15'b0_1_0_1_1_0_00_100_0_01_0;
+                tempOut <= 15'b0_1_0_1_1_0_00_000_0_01_0;
             end
             //RET
             4'b1110:
