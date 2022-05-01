@@ -26,9 +26,9 @@ module MCU(
     input reset
     );
     
+    reg [7:0] INTVEC;
     reg [11:0] stack;
-    reg Z;
-    reg C;
+    reg Z,C,I;
     
     wire [11:0] outm_c;
     wire branchDet = ~Decode_EX[4]|(Decode_EX[3]&~z);
@@ -42,11 +42,11 @@ module MCU(
     reg [15:0] DOF_PC;
     reg [15:0] DOF_IR;
     
-    wire iff, rw, ra, md, ms, mw, ma, mf;
+    wire  iff, rw, ra, md, ms, mw, ma, mf;
     wire [2:0] fs;
     wire [1:0] me,bs;
-    wire [15:0] out_rega, out_regb, me_out, ma_out;
-    wire [11:0] mf_out;
+    wire [1:0] fullmf = {~fs[2], mf};
+    wire [15:0] out_rega, out_regb, me_out, ma_out, mf_out;
     
     //EX reg/wires
     reg [11:0] EX_PC;
@@ -64,6 +64,7 @@ module MCU(
     reg [15:0] Bus_F, Bus_mem;
     
     wire [15:0] outm_d;
+    wire [11:0] outm_s;
     
     mux4x2 muxC(.a(IF_PC+1), .b(BrA), .c(Bus_b[11:0]), .d(BrA), .sel(Decode_EX[4:3]),
                        .out(outm_c));
@@ -77,11 +78,11 @@ module MCU(
                         .iff(iff), .rw(rw), .ra(ra), .md(md), .ms(ms), .mw(mw), .bs(bs), .fs(fs), .ma(ma), .me(me), .mf(mf));               
     regFile regFile_unit(.clk(clk), .reset(reset), .wr_en(Decode_WB[3]), .reg_addr(Decode_WB[2]), .in_data(outm_d),
                         .A_data(out_rega), .B_data(out_regb));
-    mux4x2 muxE(.a(out_regb), .b(16'b0|DOF_IR), .c(16'b0|Z), .d(16'b0|C), .sel(me),
+    mux4x2 muxE(.a(out_regb), .b(mf_out), .c(16'b0|Z), .d(16'b0|C), .sel(me),
                 .out(me_out));
     mux2x1 muxA(.a(DOF_PC), .b(out_rega), .sel(ma),
                 .out(ma_out));
-    mux2x1 muxF(.a(stack), .b(DOF_IR[11:0]), .sel(mf),
+    mux4x2 muxF(.a(16'b0|stack), .b(16'b0|DOF_IR[11:0]), .c(stack+1), .d(16'b0|DOF_IR[11:0]),.sel(fullmf),
                 .out(mf_out));
                 
     //EX Modules
@@ -97,23 +98,29 @@ module MCU(
      //WB Modules
      mux2x1 muxD (.a(Bus_F), .b(Bus_mem), .sel(Decode_WB[1]),
                     .out(outm_d));
+     mux2x1 muxS (.a(16'b0|stack), .b(Bus_F), .sel(Decode_WB),
+                    .out(outm_s));
     
     always @ (negedge reset)
     begin
-        stack = 0;
+        stack = 12'hFFF;
         Z = 0;
         C = 0;
+        I = 0;
+        INTVEC = 8'b1000_0000;
         
         IF_PC = 0;
         DOF_PC=0;
         DOF_IR = 16'hFFFF;
         Decode_EX = 0;
         Decode_WB = 0;
+        Bus_F = 0;
     end
     
     always @ (posedge clk)
     begin
-        if(DHS)IF_PC <= outm_c;
+        if(DHS && ~I)IF_PC <= outm_c;
+        if(DHS && I) IF_PC <= INTVEC;
         
         if(DHS)DOF_PC <= IF_PC;
         if(DHS) DOF_IR <= inst | ~{16{branchDet}};
@@ -121,7 +128,7 @@ module MCU(
         //EX Stage
         if(DHS) EX_PC <= DOF_PC;
         
-        Decode_EX[10] <= iff;
+        I <= iff;
         Decode_EX[9] <= rw & branchDet & DHS;
         Decode_EX[8] <= ra & DHS;
         Decode_EX[7] <= md;
@@ -144,6 +151,8 @@ module MCU(
         Decode_WB[2] <= Decode_EX[8];
         Decode_WB[1] <= Decode_EX[7];
         Decode_WB[0] <= Decode_EX[6];
+        
+        stack <= outm_s;
         
     end
 endmodule

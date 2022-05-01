@@ -26,7 +26,7 @@
 
 module decoder(
     input [15:0] inst,
-    output iff,
+    output [1:0] iff,
     output rw,
     output ra,
     output md,
@@ -41,7 +41,7 @@ module decoder(
     
     reg [3:0] opCode;
     reg [3:0] noAdOpCode;
-    reg [14:0] tempOut;
+    reg [15:0] tempOut;
     
     always @(*)
     begin
@@ -75,7 +75,7 @@ module decoder(
             //JMP
             4'b0100:
             begin
-                tempOut <= 15'b0_0_x_x_0_0_10_000_0_01_0;
+                tempOut <= 15'b0_0_x_x_0_0_10_000_0_01_1;
             end
             //JSR
             4'b1000:
@@ -85,22 +85,22 @@ module decoder(
             //PUSHA
             4'b1010:
             begin
-                tempOut <= 15'b0_0_x_x_1_1_00_101_0_11_1;
+                tempOut <= 15'b0_0_x_x_1_1_00_101_0_01_0;
             end
             //POPA
             4'b1100:
             begin
-                tempOut <= 15'b0_1_0_1_1_0_00_100_0_11_1;
+                tempOut <= 15'b0_1_0_1_1_0_00_100_0_01_0;
             end
             //RET
             4'b1110:
             begin
-                tempOut <= 15'b0_0_x_x_1_0_00_100_0_11_1;
+                tempOut <= 15'b0_0_x_x_1_0_10_000_0_01_0;
             end
             //No Address format
             4'b0111:
             begin
-                //TODO: As above, probably better way to init
+                //TODO: As above probably better way to init
                 noAdOpCode[3] <= inst[11];
                 noAdOpCode[2] <= inst[10];
                 noAdOpCode[1] <= inst[9];
@@ -155,12 +155,12 @@ module decoder(
                     //ION
                     4'b1010:
                     begin
-                        tempOut <= 15'b1_0_x_x_0_0_00_000_0_00_0;
+                        tempOut <= 15'b1_0_0_0_1_1_00_101_0_01_0;
                     end
                     //IOF
                     4'b1011:
                     begin
-                        tempOut <= 15'b0_0_x_x_0_0_00_000_0_00_0;
+                        tempOut <= 15'b0_0_x_x_1_1_00_000_0_00_0;
                     end
                     //SC
                     4'b1100:
@@ -196,13 +196,13 @@ module decoder(
             */
             default:
             begin
-                tempOut <= 14'b0_0_0_0_0_0_0_000_00_0_0;
+                tempOut <= 15'b0_0_0_0_0_0_0_000_00_0_0;
             end
             
         endcase
     end
     
-    assign iff = tempOut[14];
+    assign iff = tempOut[15:14];
     assign rw = tempOut[13];
     assign ra = tempOut[12];
     assign md = tempOut[11];
