@@ -23,8 +23,11 @@ module dataMem(
         mem[16'h0101] <= 16'h0001;
         mem[16'h0102] <= 16'h0002;
         mem[16'h0103] <= 16'h0003;
-        mem[16'h0104] <= 16'hFFFF;
+        mem[16'h0104] <= 16'h0005;
         mem[16'h0105] <= 16'hAAAA;
+        mem[16'h0106] <= 16'h0009;
+        mem[16'h0107] <= 16'h0007;
+        
     end
     
     //assign data_out = tempOut;

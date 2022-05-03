@@ -23,7 +23,9 @@
 
 module MCU(
     input clk,
-    input reset
+    input reset,
+    output [15:0] Aout,
+    output [15:0] Bout
     );
     
     reg [7:0] INTVEC;
@@ -31,7 +33,7 @@ module MCU(
     reg Z,C,I;
     
     wire [11:0] outm_c;
-    wire branchDet = ~Decode_EX[4]|(Decode_EX[3]&~z);
+    wire branchDet = ~Decode_EX[5]|(Decode_EX[4]&~z);
     
     //IF reg/wires
     reg [7:0] IF_PC;
@@ -43,16 +45,15 @@ module MCU(
     reg [15:0] DOF_IR;
     
     wire  iff, rw, ra, md, ms, mw, ma, mf;
-    wire [2:0] fs;
+    wire [3:0] fs;
     wire [1:0] me,bs;
-    wire [1:0] fullmf = {~fs[2], mf};
     wire [15:0] out_rega, out_regb, me_out, ma_out, mf_out;
     
     //EX reg/wires
     reg [11:0] EX_PC;
     reg [15:0] Bus_b, Bus_a;
     reg [11:0] Bus_addr;
-    reg [10:0] Decode_EX;
+    reg [11:0] Decode_EX;
     
     wire [15:0] outm_b;
     wire [15:0] F, m_bus;
@@ -66,7 +67,7 @@ module MCU(
     wire [15:0] outm_d;
     wire [11:0] outm_s;
     
-    mux4x2 muxC(.a(IF_PC+1), .b(BrA), .c(Bus_b[11:0]), .d(BrA), .sel(Decode_EX[4:3]),
+    mux4x2 muxC(.a(IF_PC+1), .b(BrA), .c(Bus_b[11:0]), .d(BrA), .sel(Decode_EX[5:4]),
                        .out(outm_c));
     
     //IF modules
@@ -82,17 +83,17 @@ module MCU(
                 .out(me_out));
     mux2x1 muxA(.a(DOF_PC), .b(out_rega), .sel(ma),
                 .out(ma_out));
-    mux4x2 muxF(.a(16'b0|stack), .b(16'b0|DOF_IR[11:0]), .c(stack+1), .d(16'b0|DOF_IR[11:0]),.sel(fullmf),
+    mux2x1 muxF(.a(16'b0|stack), .b(16'b0|DOF_IR[11:0]), .sel(mf),
                 .out(mf_out));
                 
     //EX Modules
-    alu ALU_unit(.FS(Decode_EX[2:0]), .A(Bus_a), .B(Bus_b), 
+    alu ALU_unit(.FS(Decode_EX[3:0]), .A(Bus_a), .B(Bus_b), 
                 .F(F), .Z(z), .C(z));
-    mux2x1 muxB (.a(Bus_a), .b(Bus_b), .sel(Decode_EX[7]),
+    mux2x1 muxB (.a(Bus_a), .b(Bus_b), .sel(Decode_EX[9]),
                     .out(outm_b));
-    dataMem Data_Mem_Unit(.clk(clk), .wr_en(Decode_EX[5]),.reset(reset), .addr(Bus_addr), .data_in(outm_b),
+    dataMem Data_Mem_Unit(.clk(clk), .wr_en(Decode_EX[6]),.reset(reset), .addr(Bus_addr), .data_in(outm_b),
                             .data_out(m_bus));
-     dataHazardStall Data_Stall_Unit(.RW(Decode_EX[9]), .DA(Decode_EX[8]), .DAP(ra),.MA(ma), .MB(me), .MF(mf),
+     dataHazardStall Data_Stall_Unit(.RW(Decode_EX[10]), .DA(Decode_EX[9]), .DAP(ra),.MA(ma), .MB(me), .MF(mf),
                                         .DHS(DHS));
      adder BrAdd(.a(DOF_PC), .b(F), .out(BrA));
      //WB Modules
@@ -123,19 +124,19 @@ module MCU(
         if(DHS && I) IF_PC <= INTVEC;
         
         if(DHS)DOF_PC <= IF_PC;
-        if(DHS) DOF_IR <= inst | ~{16{branchDet}};
+        if(DHS) DOF_IR <= inst | ~{16{branchDet|Decode_EX[4]}};
         
         //EX Stage
         if(DHS) EX_PC <= DOF_PC;
         
         I <= iff;
-        Decode_EX[9] <= rw & branchDet & DHS;
-        Decode_EX[8] <= ra & DHS;
-        Decode_EX[7] <= md;
-        Decode_EX[6] <= ms;
-        Decode_EX[5] <= mw & DHS & branchDet;
-        Decode_EX[4:3] <= bs & {2{DHS}} & {2{branchDet}};
-        Decode_EX[2:0] <= fs;
+        Decode_EX[10] <= rw & branchDet & DHS;
+        Decode_EX[9] <= ra & DHS;
+        Decode_EX[8] <= md;
+        Decode_EX[7] <= ms;
+        Decode_EX[6] <= mw & DHS & branchDet;
+        Decode_EX[5:4] <= bs & {2{DHS}} & {2{branchDet}};
+        Decode_EX[3:0] <= fs;
         
         Bus_b <= me_out;
         Bus_a <= ma_out;
@@ -147,12 +148,18 @@ module MCU(
         Z <= z;
         C <= c;
         
-        Decode_WB[3] <= Decode_EX[9];
-        Decode_WB[2] <= Decode_EX[8];
-        Decode_WB[1] <= Decode_EX[7];
-        Decode_WB[0] <= Decode_EX[6];
+        Decode_WB[3] <= Decode_EX[10];
+        Decode_WB[2] <= Decode_EX[9];
+        Decode_WB[1] <= Decode_EX[8];
+        Decode_WB[0] <= Decode_EX[7];
         
         stack <= outm_s;
         
+        
+        
     end
+    
+    assign Aout = out_rega;
+    assign Bout = out_regb;
+    
 endmodule

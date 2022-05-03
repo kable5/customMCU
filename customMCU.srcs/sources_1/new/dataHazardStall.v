@@ -28,7 +28,6 @@ module dataHazardStall(
     );
     
     reg compA;
-    reg compB;
     reg ha;
     reg hb;
     reg tempDHS;
@@ -37,8 +36,8 @@ module dataHazardStall(
     begin
         if(DA == DAP | (MA==1&&MF==1)) compA = 1;
         else compA = 0;
-        ha = ~MA & RW & DA & compA;
-        hb = ~(MB[0]|MB[1]) & RW & DA & compA;
+        ha = ~MA & RW & compA;
+        hb = ~(MB[0]|MB[1]) & RW & compA;
         tempDHS = ~(ha|hb);
     end
     assign DHS = tempDHS;

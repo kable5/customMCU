@@ -22,7 +22,7 @@
 
 
 module alu(FS, A, B, F, Z, C);
-    input[2:0] FS;
+    input[3:0] FS;
     input[15:0] A;
     input[15:0] B;
     output reg [15:0] F;
@@ -31,23 +31,28 @@ module alu(FS, A, B, F, Z, C);
     always @(*)
     begin
         case(FS)
-            3'b001: F = A + B;
-            3'b010: F = A & B;
-            3'b011: F = 0;
-            3'b100: F = B + 16'b1;
-            3'b101: F = B - 16'b1;
-            3'b110: F = ~B;
-            3'b111:
+            4'b0001: F = A + B;
+            4'b0010: F = A & B;
+            4'b0011: F = 0;
+            4'b0100: F = B + 16'b1;
+            4'b0101: F = B - 16'b1;
+            4'b0110: F = ~B;
+            4'b0111:
             begin
                 if(B==0)F = 1; else F=2;
             end
+            4'b1000: F = A ^ B;
+            4'b1001: F = A|B;
+            4'b1100: F = A << B;
+            4'b1101: F = A >> B;
+            4'b1110: F = A << 1;
+            4'b1111: F = A >> 1;
             default: F = 0;
        endcase
        $display("%b", FS);
        $display("%b", F);
        if (F == 16'b0 && FS == 3'b101)
        begin
-            $display("made it");
             ztemp = 1;
        end
     end
