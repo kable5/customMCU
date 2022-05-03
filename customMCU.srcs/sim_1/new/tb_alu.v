@@ -34,7 +34,7 @@ initial begin
       #100   
      
       A = 16'd15;
-      B = 16'd11;  
+      B = 16'd0;  
     
     for (integer i = 0; i < 8; i = i + 1) 
     begin

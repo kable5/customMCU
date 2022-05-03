@@ -213,19 +213,19 @@ module decoder(
                 end
                 default:
                 begin
-                    tempOut <= 15'b0_0_0_0_0_0_0_0000_00_0_0;
+                    tempOut <= 16'b0_0_0_0_0_0_0_0000_00_0_0;
                 end
                 endcase
             end
             default:
             begin
-                tempOut <= 15'b0_0_0_0_0_0_0_0000_00_0_0;
+                tempOut <= 16'b0_0_0_0_0_0_0_0000_00_0_0;
             end
             
         endcase
     end
     
-    assign iff = tempOut[16:15];
+    assign iff = tempOut[15];
     assign rw = tempOut[14];
     assign ra = tempOut[13];
     assign md = tempOut[12];

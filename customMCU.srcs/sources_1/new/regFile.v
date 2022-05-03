@@ -34,7 +34,7 @@ module regFile(
     
     always @(negedge clk or negedge reset)
     begin
-        if(reset == 1)
+        if(reset)
         begin
             registers[0] <= 0;
             registers[1] <= 0;

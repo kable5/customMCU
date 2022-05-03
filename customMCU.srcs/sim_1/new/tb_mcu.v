@@ -37,7 +37,7 @@ module tb_mcu();
     
     initial
     begin
-        #1000;
+        #500;
         $finish;
     end
     

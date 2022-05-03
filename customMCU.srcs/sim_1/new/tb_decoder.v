@@ -23,11 +23,11 @@
 module tb_decoder();
 
     reg [15:0] inst;
-    wire iff, rw, ra, md, ms, mw, bs, me, mf;
+    wire iff, rw, ra, md, ms, mw, ma, me, mf;
     wire [2:0] fs;
-    wire [1:0] ma;
+    wire [1:0] mb;
     
-    decoder UUT (.inst(inst), .iff(iff), .rw(rw), .ra(ra), .md(md), .ms(ms), .mw(mw), .bs(bs), .fs(fs), .ma(ma), .me(me), .mf(mf));
+    decoder UUT (.inst(inst), .iff(iff), .rw(rw), .ra(ra), .md(md), .ms(ms), .mw(mw), .mb(mb), .fs(fs), .ma(ma), .me(me), .mf(mf));
     
     initial
     begin

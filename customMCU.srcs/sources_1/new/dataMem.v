@@ -14,6 +14,7 @@ module dataMem(
             mem[addr] <= data_in;
         else 
             data_out <= mem[addr];
+         
     end
     
     always@(negedge reset)
@@ -24,7 +25,7 @@ module dataMem(
         mem[16'h0102] <= 16'h0002;
         mem[16'h0103] <= 16'h0003;
         mem[16'h0104] <= 16'h0005;
-        mem[16'h0105] <= 16'hAAAA;
+        mem[16'h0105] <= 16'h0007;
         mem[16'h0106] <= 16'h0009;
         mem[16'h0107] <= 16'h0007;
         
