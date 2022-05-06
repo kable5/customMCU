@@ -144,12 +144,12 @@ module decoder(
                     //CLC
                     4'b1000:
                     begin
-                        tempOut <= 16'b0_0_x_x_0_0_00_0011_0_00_0;
+                        tempOut <= 16'b0_0_x_x_0_0_00_0011_0_11_0;
                     end
                     //CLZ
                     4'b1001:
                     begin
-                        tempOut <= 16'b0_0_x_x_0_0_00_0011_1_00_0;
+                        tempOut <= 16'b0_0_x_x_0_0_00_0011_0_10_0;
                     end
                     //ION
                     4'b1010:

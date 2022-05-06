@@ -101,25 +101,24 @@ module MCU(
                     .out(outm_d));
      mux2x1 muxS (.a(16'b0|stack), .b(Bus_F), .sel(Decode_WB),
                     .out(outm_s));
-    
-    always @ (negedge reset)
-    begin
-        stack = 12'hFFF;
-        Z = 0;
-        C = 0;
-        I = 0;
-        INTVEC = 8'b1000_0000;
-        
-        IF_PC = 0;
-        DOF_PC=0;
-        DOF_IR = 16'hFFFF;
-        Decode_EX = 0;
-        Decode_WB = 0;
-        Bus_F = 0;
-    end
-    
+
     always @ (posedge clk)
     begin
+        if(reset)
+        begin
+            stack = 12'hFFF;
+            Z = 0;
+            C = 0;
+            I = 0;
+            INTVEC = 8'b0010_0000;
+                
+            IF_PC = 0;
+            DOF_PC=0;
+            DOF_IR = 16'hFFFF;
+            Decode_EX = 0;
+            Decode_WB = 0;
+            Bus_F = 0;
+        end
         if(DHS && ~I)IF_PC <= outm_c;
         if(DHS && I) IF_PC <= INTVEC;
         
